@@ -9,6 +9,10 @@ jest.mock('hyperswarm', () =>
   jest.fn().mockImplementation(() => ({
     join: mockJoin,
     on: mockOn,
+    connecting: 0,
+    connections: new Set(),
+    peers: new Map(),
+    dht: { host: '127.0.0.1', port: 49737, firewalled: false },
   })),
 );
 

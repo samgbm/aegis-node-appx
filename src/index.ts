@@ -11,7 +11,11 @@ export function initAegisNode(): string {
 }
 
 export function startHealthServer(
-  swarm: { connections: { size: number } },
+  swarm: {
+    connections: { size: number };
+    connecting?: number;
+    dht?: { host?: string | null; port?: number; firewalled?: boolean };
+  },
   port = HEALTH_PORT,
 ) {
   const server = http.createServer((req, res) => {
@@ -24,6 +28,9 @@ export function startHealthServer(
           status: 'ok',
           peers: swarm.connections.size,
           wdk: 'ready',
+          connecting: swarm.connecting ?? 0,
+          dhtHost: swarm.dht?.host ?? null,
+          firewalled: swarm.dht?.firewalled ?? null,
         }),
       );
       return;
@@ -46,6 +53,19 @@ export async function listenOnDht(topicString = 'aegis-health-bridge-v1') {
   await initWDKAgent();
   logger.info('Aegis Node is fully primed for agentic WDK operations');
   startHealthServer(swarm);
+
+  const shutdown = async () => {
+    logger.info('Destroying Hyperswarm so DHT records do not go stale');
+    await swarm.destroy();
+    process.exit(0);
+  };
+  process.once('SIGINT', () => {
+    void shutdown();
+  });
+  process.once('SIGTERM', () => {
+    void shutdown();
+  });
+
   return swarm;
 }
 
