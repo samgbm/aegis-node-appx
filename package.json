@@ -9,7 +9,8 @@
     "dev": "ts-node src/index.ts",
     "test": "jest",
     "wdk": "wdk",
-    "mcp": "wdk-mcp"
+    "mcp": "wdk-mcp",
+    "status": "ts-node src/cli.ts status"
   },
   "keywords": [
     "aegis",
@@ -30,6 +31,7 @@
   },
   "dependencies": {
     "@tetherto/wdk-cli": "^1.0.0-beta.2",
+    "commander": "^14.0.3",
     "dotenv": "^17.4.2",
     "hyperswarm": "^4.17.0",
     "pino": "^10.3.1",
